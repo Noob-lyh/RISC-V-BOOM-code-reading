@@ -1,8 +1,8 @@
-# Chisel3简介
+# Chisel3部分特性简介
 
 [Chisel/FIRRTL: Introduction (chisel-lang.org)](https://www.chisel-lang.org/chisel3/docs/introduction.html)
 
-对Chisel3/FIRRTL介绍文档中重点内容的翻译。
+对Chisel3/FIRRTL介绍文档中重点内容的翻译。优先介绍BOOM代码中常用的部分。一些没涉及的点，在代码中出现时，一般在文件的最后会加上补充说明。
 
 
 
@@ -416,7 +416,273 @@ def squareWave(period: UInt) = toggle(pulse(period >> 1))	// 每period/2个周�
 
 
 
-### 存储单元
+### 端口的连接
+
+#### 子类的连接
+
+```scala
+class SimpleLink extends Bundle {	// 含data和valid的输出端口
+  val data = Output(UInt(16.W))
+  val valid = Output(Bool())
+}
+
+class PLink extends SimpleLink {	// 再添加五位校验码得到PLink端口
+  val parity = Output(UInt(5.W))
+}
+
+class FilterIO extends Bundle {		// 滤波器IO端口，包含两个PLink端口，一进一出
+  val x = Flipped(new PLink)
+  val y = new PLink
+}
+
+class Filter extends Module {
+  val io = IO(new FilterIO)
+  // ...
+}
+```
+
+#### 向量
+
+Bundle设置Input/Output、Flipped方法见开头部分。
+
+而Vecs和Flipped方法也可以同时使用，如下：
+
+```scala
+import chisel3.util.log2Ceil
+class CrossbarIo(n: Int) extends Bundle {
+  val in = Vec(n, Flipped(new PLink))
+  val sel = Input(UInt(log2Ceil(n).W))
+  val out = Vec(n, new PLink)
+}
+```
+
+#### 批量连接
+
+使用"<>"可以递归地连接端口。注意，只能用于有向的元素，如果有不匹配的名称，则不会生成对应的连接。
+
+如以下代码，Block的输入x经过f1和f2后作为输出y，批量连接使得代码极其简洁：
+
+```scala
+class Block extends Module {
+  val io = IO(new FilterIO)
+  val f1 = Module(new Filter)
+  val f2 = Module(new Filter)
+  f1.io.x <> io.x
+  f1.io.y <> f2.io.x
+  f2.io.y <> io.y
+}
+```
+
+#### 标准ready-valid接口
+
+又称ReadyValidIO / Decoupled端口，初始为输出，Flipped后为输入。
+
+```scala
+import chisel3._
+import chisel3.util.Decoupled
+
+/**
+  *	  等价于：
+  *   input         io_readyValid_ready,
+  *   output        io_readyValid_valid,
+  *   output [31:0] io_readyValid_bits
+  */
+class ProducingData extends Module {
+  val io = IO(new Bundle {
+    val readyValid = Decoupled(UInt(32.W))})
+  io.readyValid.valid := true.B
+  io.readyValid.bits := 5.U
+}
+
+/**
+  *   等价于：
+  *   output        io_readyValid_ready,
+  *   input         io_readyValid_valid,
+  *   input  [31:0] io_readyValid_bits
+  */
+class ConsumingData extends Module {
+  val io = IO(new Bundle {
+    val readyValid = Flipped(Decoupled(UInt(32.W)))
+  })
+  io.readyValid.ready := false.B
+  // do something with io.readyValid.valid/bits
+}
+```
+
+
+
+### 功能模块创建
+
+Scala的对象自带`apply`方法，应用这个方法，我们可以把一个模块直接当做返回值使用，使代码更简洁。如下：
+
+```scala
+import chisel3._
+
+class Mux2 extends Module {		// 定义类，若要构造Mux4类，可以在类中例化三个Mux2类，然后连接端口完成
+  val io = IO(new Bundle {
+    val sel = Input(Bool())
+    val in0 = Input(UInt())
+    val in1 = Input(UInt())
+    val out = Output(UInt())
+  })
+  io.out := Mux(io.sel, io.in0, io.in1)
+}
+	
+object Mux2 {	// 定义单例对象及其apply方法
+  def apply(sel: UInt, in0: UInt, in1: UInt) = {
+    val m = Module(new Mux2)	// 例化类
+    m.io.in0 := in0
+    m.io.in1 := in1
+    m.io.sel := sel
+    m.io.out	// 直接返回输出
+  }
+}
+```
+
+这样在构造MUX4的时候就可以简化代码：
+
+```scala
+class Mux4 extends Module {
+  val io = IO(new Bundle {
+    val in0 = Input(UInt(1.W))
+    val in1 = Input(UInt(1.W))
+    val in2 = Input(UInt(1.W))
+    val in3 = Input(UInt(1.W))
+    val sel = Input(UInt(2.W))
+    val out = Output(UInt(1.W))
+  })
+    
+    io.out := Mux2(io.sel(1),
+                 Mux2(io.sel(0), io.in0, io.in1),
+                 Mux2(io.sel(0), io.in2, io.in3))
+  
+  /* 若不使用功能模块，则这部分代码会很长： 
+  
+  val m0 = Module(new Mux2)
+  m0.io.sel := io.sel(0)
+  m0.io.in0 := io.in0
+  m0.io.in1 := io.in1
+
+  val m1 = Module(new Mux2)
+  m1.io.sel := io.sel(0)
+  m1.io.in0 := io.in2
+  m1.io.in1 := io.in3
+
+  val m3 = Module(new Mux2)
+  m3.io.sel := io.sel(1)
+  m3.io.in0 := m0.io.out
+  m3.io.in1 := m1.io.out
+
+  io.out := m3.io.out
+  
+  */
+}
+```
+
+
+
+### Chisel中的printing
+
+#### Scala样式
+
+```scala
+// 打印UInt
+val myUInt = 33.U
+
+printf(p"myUInt = $myUInt") // myUInt = 33 , p为自定义字符串插值器
+
+printf(p"myUInt = 0x${Hexadecimal(myUInt)}") // myUInt = 0x21
+
+printf(p"myUInt = ${Binary(myUInt)}") // myUInt = 100001
+
+printf(p"myUInt = ${Character(myUInt)}") // myUInt = !
+```
+
+```scala
+// 打印Vec
+val myVec = VecInit(5.U, 10.U, 13.U)
+
+printf(p"myVec = $myVec") // myVec = Vec(5, 10, 13)
+```
+
+```scala
+// 打印Bundle
+val myBundle = Wire(new Bundle {
+  val foo = UInt()
+  val bar = UInt()
+})
+myBundle.foo := 3.U
+myBundle.bar := 11.U
+
+printf(p"myBundle = $myBundle") // myBundle = Bundle(a -> 3, b -> 11)
+```
+
+```scala
+// 打印端口调试信息的简单例子
+class Message extends Bundle {
+  val valid = Bool()
+  val addr = UInt(32.W)
+  val length = UInt(4.W)
+  val data = UInt(64.W)
+    
+  override def toPrintable: Printable = {	// 在Bundle中重写toPrintable方法
+    val char = Mux(valid, 'v'.U, '-'.U)
+    p"Message:\n" +
+    p"  valid  : ${Character(char)}\n" +
+    p"  addr   : 0x${Hexadecimal(addr)}\n" +
+    p"  length : $length\n" +
+    p"  data   : 0x${Hexadecimal(data)}\n"
+  }
+    
+}
+
+val myMessage = Wire(new Message)	// 例化并复制
+myMessage.valid := true.B
+myMessage.addr := "h1234".U
+myMessage.length := 10.U
+myMessage.data := "hdeadbeef".U
+
+printf(p"$myMessage")	// 打印
+
+/* 这将输出以下信息：
+Message:
+  valid  : v
+  addr   : 0x00001234
+  length : 10
+  data   : 0x00000000deadbeef
+*/
+```
+
+#### C样式
+
+```scala
+val myUInt = 32.U
+printf("myUInt = %d", myUInt) // myUInt = 32
+```
+
+
+
+### 黑盒（待施工）
+
+
+
+### 列举（待施工）
+
+
+
+### 多时钟域（待施工）
+
+
+
+### 重置（待施工）
+
+
+
+### 多态性和参数化（待施工）
+
+
+
+### 存储单元（待施工）
 
 #### ROM
 
@@ -432,25 +698,4 @@ def squareWave(period: UInt) = toggle(pulse(period >> 1))	// 每period/2个周�
 
 #### 掩码
 
-
-
 #### 初始化
-
-
-
-### 端口的连接
-
-#### 向量
-
-Bundle设置Input/Output、Flipped方法见开头部分。
-
-#### 批量连接
-
-#### 标准ready-valid接口
-
-ReadyValidIO / Decoupled
-
-
-
-
-

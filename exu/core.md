@@ -1,5 +1,5 @@
 # core
-—— RISC-V处理器核心。
+—— RISC-V BOOM处理器核心。
 ```scala
 //******************************************************************************
 // Copyright (c) 2015 - 2019, The Regents of the University of California (Regents).

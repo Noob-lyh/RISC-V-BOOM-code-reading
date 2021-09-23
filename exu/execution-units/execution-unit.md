@@ -7,7 +7,7 @@
 
 在BOOM中，一个执行单元(Execution Unit)连接到一个发射端口上，接收一个发射的指令（即三发射的BOOM需要有三个执行单元），其内部拥有一个或多个功能单元(Functional Unit)。 比如一个执行单元可能仅包括一个整数ALU，也可能是整数ALU、整数乘法的组合。本文件中，先定义了一个抽象的执行单元类ExecutionUnit，然后派生出两个子类ALUExeUnit和FPUExeUnit，其中可含有的功能单元不同，而且含有什么样的功能单元可由构造时传入的参数决定。执行单元的示意图如下：
 
-<img src=".\exeunit.jpg" alt="exeunit" style="zoom:67%;" />
+![](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/exeunit.jpg)
 
 
 

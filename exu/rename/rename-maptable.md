@@ -175,7 +175,7 @@ val io = IO(new BoomBundle()(p) {		//输入输出端口
 ```
 更新重映射表原理示意图：（假设`plWidth = 6`，`numLregs = 4`，`numPregs = 8 = 2^3`，且此时i取1）
 
-![maptable1](.\maptable1.jpg)
+![maptable1](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/maptable1.jpg)
 
 ##### ②创建和恢复映射表的快照
 

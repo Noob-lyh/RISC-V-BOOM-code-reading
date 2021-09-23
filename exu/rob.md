@@ -2,7 +2,7 @@
 
 **重排序缓存器(Reorder Buffer, ROB)**跟踪在流水线中运行的微指令的状态。ROB的作用就是给程序员一种“他的程序是按顺序执行的”的错觉。指令在被译码和重命名后，将被派遣到ROB和**发射队列**并被标记为繁忙。指令完成执行后将告知ROB并且被重新标记为不繁忙。一旦ROB的“头”不再繁忙，就代表这条指令被提交了，它的体系结构状态现在是可见的。如果有一个异常发生，并且引发异常的指令在ROB的头部，流水线将被清除，并且在异常指令可见后不会出现任何体系结构的更改，然后ROB会重定向PC到相应的异常处理程序。
 
-<img src=".\ROB.jpg" alt="ROB" style="zoom: 67%;" />
+![](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/ROB.jpg)
 
 上图是一个三发射双宽度(two-wide)BOOM的ROB。派遣的微指令将被写在ROB的底部（或尾部，tail），而提交的微指令将在顶部，即ROB头部提交，然后更新重命名阶段的相关信息。完成执行的微指令（等待写回的微指令，wb uops）会清除他们的繁忙位。注意：派遣的微指令组会同时被写进同一个ROB的行，在内存中连续存放，使得可以用一个PC代表整个行。
 
@@ -1083,11 +1083,11 @@ ROB可以完全填满，但仅当上个周期没有派遣一行的时候。在�
 
 enableCommitMapTable为0时的状态图： （该参数意义见本文最后）
 
-<img src=".\eCMT0.jpg" alt="eCMT0" style="zoom: 80%;" />
+![](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/eCMT0.jpg)
 
 enableCommitMapTable为1时的状态图：
 
-<img src=".\eCMT1.jpg" alt="eCMT1" style="zoom:80%;" />
+![](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/eCMT1.jpg)
 
 相同转换用绿色标出，不同的转换用红色和蓝色标出。
 

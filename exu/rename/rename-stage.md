@@ -1,7 +1,7 @@
 # rename-stage
 —— 重命名逻辑的整体连接。描述了整个重命名阶段的操作流程，包括顶层的接口（与系统以及其他级的互联信号）、子模块的互联（Maptable、Freelist以及Busytable）以及流水线的时序逻辑等。其中，流水线的状态、线网以及逻辑主要在抽象类中定义，而子模块互联以及BypassAllocations的逻辑在RenameStage类中给出了具体的实现。整个阶段的示意图如下：
 
-![stage1](.\stage1.jpg)
+![stage1](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/stage1.jpg)
 
 
 
@@ -23,7 +23,7 @@ BOOM 处理器采用的是显式重命名方案。
 >
 > 5. 当一条指令发起重命名请求时，通过索引map_table获取其源操作数逻辑寄存器对应的物理寄存器，由free_list分配一个空闲的物理寄存器作为指令的目的寄存器，最后通过busy_table 判断指令的源操作数寄存器是否可读，如果可读指令将被发射(Issue)。
 >
->    ![](.\rename1.jpg)
+>    ![rename1](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/rename1.jpg)
 
 隐式重命名方案见于 Pentium 3 ，Pentium Pro 等处理器。
 
@@ -37,7 +37,7 @@ BOOM 处理器采用的是显式重命名方案。
 >
 > 5. 相比于显式重命名，隐式重命名需要的物理寄存器数目更少，但每个操作数在其生命周期中需要保存在 ROB 和 ARF 两个位置，读取数据的复杂度较高、功耗更高
 >
->    ![rename2](.\rename2.jpg)
+>    ![rename2](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/rename2.jpg)
 
 
 

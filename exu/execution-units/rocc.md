@@ -2,13 +2,13 @@
 
 RISC-V作为一个新的开源指令集架构，由Aspire Lab开放，具有简单开放的特点，主要用于教育研究。一个最主要的特点是其ISA通过支持自定义指令的方式，支持自定义硬件加速器，用于专用领域的计算加速设计。而RoCC接口，就是加速器与RISC-V处理器核通信的接口。RoCC接口由多组不同的Wire和bundle组成，示意图如下：
 
-<img src=".\rocc.jpg" alt="rocc" style="zoom: 67%;" />
+![](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/rocc.jpg)
 
 其中cmd包含2个源寄存器的内容，和整条指令内容。resp包含目的寄存器。cmd和resp均为Decoupled接口。
 
 下图为Decoupled接口示意图。
 
-<img src=".\Decoupled.jpg" alt="Decoupled" style="zoom:67%;" />
+![](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/Decoupled.jpg)
 
 [RISCV-RoCC简介_Frederick_Bala的博客-CSDN博客](https://blog.csdn.net/Frederick_Bala/article/details/107563276)
 

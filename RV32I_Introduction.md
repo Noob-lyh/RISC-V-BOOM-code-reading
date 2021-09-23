@@ -1,6 +1,6 @@
-# RV32I
+# RV32I简介
 
-对RISC-V官方文档《The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA》中 “RV32I Base Integer Instruction Set,
+施工中。对RISC-V官方文档《The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA》中 “RV32I Base Integer Instruction Set,
 Version 2.1”即RV32I指令集部分的翻译，以及和程序中对应的一些说明。
 
 ---
@@ -21,7 +21,7 @@ RV32I的设计足以形成编译器目标并支持现代操作系统系统环境
 
 ### 基本指令格式
 
-![InstructionType](.\阅读报告\exu\InstructionType.jpg)
+![InstructionType](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/InstructionType.jpg)
 
 ### 整数计算指令
 
@@ -45,7 +45,7 @@ EEI将定义内存系统是小端(little-endian)还是大端(big-endian)。在RI
 >
 > 在大端配置中，多字节存储器在最低内存字节地址写入最高有效寄存器字节，然后按重要性降序写入其他寄存器字节。加载将较大内存字节地址的内容传输到较低有效寄存器字节。
 
-![LoadStore](.\阅读报告\LoadStore.jpg)
+![LoadStore](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/LoadStore.jpg)
 
 加载和存储指令在寄存器和内存之间传输值。加载以I-type编码，存储为S-type。有效地址通过将寄存器rs1与符号扩展后的12位偏移量相加获得。加载时，将值从内存复制到寄存器rd。储存时，将寄存器rs2中的值复制到内存。
 

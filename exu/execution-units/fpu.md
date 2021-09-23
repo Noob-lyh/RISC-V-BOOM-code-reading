@@ -1,7 +1,7 @@
 # fpu
 浮点单元。
 
-<img src=".\fpu.jpg" alt="fpu" style="zoom:50%;" />
+![](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/fpu.jpg)
 
 FPU的类层次结构如上（也可以见execution-units.scala中层次部分）。专业性很强的代码包含在hardfloat和rocket库中。BOOM的“FPU”类中例化了Rocket的组件，而这个类又从流水线化的功能单元抽象类继承，以提供对乱序推测的支持。
 

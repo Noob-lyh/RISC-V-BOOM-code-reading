@@ -18,13 +18,13 @@ import boom.util.{BoomCoreStringPrefix}
 
 从官方文档上面找到的图，只看执行单元组这一部分：                       →                      →                         ↓
 
-![BOOMppl](.\BOOMppl.jpg)
+![BOOMppl](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/BOOMppl.jpg)
 
 一个方框就代表一个执行单元，而方框中难以描述的形状就代表一个功能单元；不同的功能单元组合，可以实现不同的功能。
 
 根据各个类的包含与继承关系，可以大概画出如下的层次图：
 
-![exeunits](.\exeunits.jpg)
+![exeunits](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/exeunits.jpg)
 
 其中，灰色方框就是执行单元，而灰色方框连接的线上的就是功能单元。虚线表示继承关系（如FunctionalUnit抽象类由BoomModule类继承），而导图主体表示可选的包含关系（比如ALUExeUnit类中可以包含ALUUnit类、RoCCShim类等中的若干类，注意有些功能单元组合是不被允许的）。
 
@@ -211,7 +211,7 @@ import boom.util.{BoomCoreStringPrefix}
     
   // The mem-unit will also bypass writes to readers in the RRD stage.
   // NOTE: This does NOT include the ll_wport
-  // 内存单元同样会由旁路写到RRD级（？）。这不包括ll_wport(?).
+  // 内存单元同样会由旁路写到读寄存器级。这不包括ll_wport(?).
   val bypassable_write_port_mask = exe_units.withFilter(x => x.writesIrf).map(u => u.bypassable)
 }
 ```

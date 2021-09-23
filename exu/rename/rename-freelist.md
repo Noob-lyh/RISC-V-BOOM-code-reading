@@ -119,11 +119,11 @@ class RenameFreeList(	// 1.参数
 ```
 alloc_masks原理图：
 
-![freelist2](.\freelist2.png)
+![freelist2](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/freelist2.png)
 
 sel_mask原理图：
 
-![freelist1](.\freelist1.jpg)
+![freelist1](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/freelist1.jpg)
 
 #### 4.逻辑功能
 ##### ①填写分支分配列表
@@ -142,7 +142,7 @@ sel_mask原理图：
 ```
 list_req和new_list原理图：（`plWidth=5, maxBrCoun=4`，且图中 i 应为 0->3 ）
 
-![freelist3](.\freelist3.png)
+![freelist3](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/freelist3.png)
 
 br_alloc_lists原理图：（再贴一遍代码）
 
@@ -159,7 +159,7 @@ br_alloc_lists原理图：（再贴一遍代码）
 	//         将原值去掉已释放的，再加上本批plWidth个指令新分配的寄存器（即作为普通指令看待）。
 ```
 
-![freelist4](.\freelist4.png)
+![freelist4](https://github.com/Noob-lyh/RISC-V-BOOM-code-reading/blob/main/pics/freelist4.png)
 
 ##### ②更新空闲列表
 
